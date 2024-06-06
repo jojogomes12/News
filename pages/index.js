@@ -55,19 +55,24 @@ export default function Home({ articles }) {
                 className="block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 mb-4"
             />
             <div className="grid gap-4">
-                {currentArticles.map((article, index) => (
-                    <div key={index} className="h-full">
-                        <Link legacyBehavior href={article.url}>
-                            <a className="block max-w-full p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 h-full relative">
-                                <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{article.title}</h5>
-                                <p className="mb-2 font-normal text-gray-700 dark:text-gray-400">{article.description}</p>
-                                <p className="absolute top-2 right-2 text-sm text-gray-500 dark:text-gray-300">Autor: {getAuthorName(article)}</p>
-                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-300">Publicado em: {new Date(article.publishedAt).toLocaleDateString()}</p>
-                                <p className="text-gray-500 dark:text-gray-300">Fonte: {article.source.name}</p>
-                            </a>
-                        </Link>
-                    </div>
-                ))}
+            {currentArticles.map((article, index) => (
+    <div key={index} className="h-full">
+        <Link legacyBehavior href={article.url}>
+            <a className="block max-w-full p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 h-full relative">
+                {article.mainImage && <img src={article.mainImage} alt={article.title} className="mb-4 w-full h-56 object-cover" />}
+                <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{article.title}</h5>
+                <p className="mb-2 font-normal text-gray-700 dark:text-gray-400">{article.description}</p>
+                <p className="absolute top-2 right-2 text-sm text-gray-500 dark:text-gray-300">Autor: {getAuthorName(article)}</p>
+                <p className="mb-2 text-sm text-gray-500 dark:text-gray-300">Publicado em: {new Date(article.publishedAt).toLocaleDateString()}</p>
+                <p className="text-gray-500 dark:text-gray-300">Fonte: {article.source.name}</p>
+            </a>
+        </Link>
+    </div>
+))}
+
+
+
+
             </div>
             <div className="flex justify-between mt-8">
                 <button disabled={currentPage === 1} onClick={prevPage} className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md focus:outline-none">Anterior</button>
@@ -90,7 +95,12 @@ export async function getStaticProps() {
 
     try {
         const response = await axios.get(url, { params });
-        const articles = response.data.articles;
+        const articles = response.data.articles.map(article => {
+            return {
+                ...article,
+                mainImage: article.urlToImage // Supondo que a URL da imagem principal esteja em article.urlToImage
+            };
+        });
         return {
             props: {
                 articles
@@ -105,3 +115,4 @@ export async function getStaticProps() {
         };
     }
 }
+
